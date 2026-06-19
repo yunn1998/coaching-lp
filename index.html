@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>夜のノート — 伴走型コーチング β版</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Shippori+Mincho:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            night:    '#0d1117',
+            deepnavy: '#111827',
+            navy:     '#1a2540',
+            bluegray: '#2d3e5a',
+            mist:     '#4a5a72',
+            silvermist:'#8fa4b8',
+            moonlight: '#c8d8e8',
+            gold:     '#c8933a',
+            amber:    '#d4a853',
+            warmglow: '#e8c07a',
+            cream:    '#f5eed8',
+          },
+          fontFamily: {
+            mincho: ['"Shippori Mincho"', '"Noto Serif JP"', 'Georgia', 'serif'],
+          },
+          letterSpacing: {
+            wider2: '0.18em',
+            widest2: '0.28em',
+          },
+          lineHeight: {
+            loose2: '2.2',
+            loose3: '2.6',
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: #0d1117;
+      color: #c8d8e8;
+      font-family: 'Shippori Mincho', 'Noto Serif JP', Georgia, serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Fade-in on scroll ── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.9s cubic-bezier(.22,.68,0,1.2),
+                  transform 0.9s cubic-bezier(.22,.68,0,1.2);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up.delay-1 { transition-delay: 0.15s; }
+    .fade-up.delay-2 { transition-delay: 0.30s; }
+    .fade-up.delay-3 { transition-delay: 0.45s; }
+    .fade-up.delay-4 { transition-delay: 0.60s; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .fade-up { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ── Gold CTA button ── */
+    .btn-gold {
+      display: inline-block;
+      padding: 1rem 2.8rem;
+      background: linear-gradient(135deg, #c8933a 0%, #e8c07a 55%, #c8933a 100%);
+      background-size: 200% auto;
+      color: #0d1117;
+      font-family: 'Shippori Mincho', serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      letter-spacing: 0.18em;
+      border-radius: 2px;
+      transition: background-position 0.5s ease, box-shadow 0.3s ease, transform 0.2s ease;
+      box-shadow: 0 0 28px rgba(200, 147, 58, 0.25);
+      text-decoration: none;
+      cursor: pointer;
+      border: none;
+    }
+    .btn-gold:hover {
+      background-position: right center;
+      box-shadow: 0 0 48px rgba(200, 147, 58, 0.5);
+      transform: translateY(-2px);
+    }
+
+    /* ── Divider ── */
+    .gold-rule {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #c8933a55, transparent);
+    }
+
+    /* ── Pain card ── */
+    .pain-card {
+      border-left: 1px solid #c8933a66;
+      padding-left: 1.5rem;
+      margin-bottom: 1.8rem;
+    }
+
+    /* ── Roadmap step ── */
+    .step-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #c8933a;
+      flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(200,147,58,0.6);
+    }
+    .step-line {
+      flex: 1;
+      width: 1px;
+      background: linear-gradient(to bottom, #c8933a66, #c8933a11);
+      margin: 0 auto;
+    }
+
+    /* ── Ambient FV glow ── */
+    .fv-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+    }
+
+    /* ── Section base padding ── */
+    section { padding: 7rem 0; }
+
+    @media (max-width: 640px) {
+      section { padding: 4.5rem 0; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ═══════════════════════════════════════════
+  1. FIRST VIEW
+════════════════════════════════════════════ -->
+<section id="fv" class="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style="padding: 0;">
+
+  <!-- Ambient background glows -->
+  <div class="fv-glow w-96 h-96 bg-amber-900 opacity-10" style="top:-8%;left:-12%;"></div>
+  <div class="fv-glow w-80 h-80 opacity-10" style="background:#c8933a;bottom:5%;right:-10%;"></div>
+  <div class="fv-glow w-64 h-64 opacity-5" style="background:#4a5a72;top:40%;left:30%;"></div>
+
+  <!-- Notebook visual (CSS-only illustration) -->
+  <div class="fade-up relative mb-12 mx-auto" style="width:220px; height:160px;">
+    <!-- notebook body -->
+    <div class="absolute inset-0 rounded-sm" style="background:linear-gradient(160deg,#1e2d47 0%,#15203a 100%); box-shadow: 8px 8px 40px rgba(0,0,0,0.7), inset 0 0 60px rgba(200,147,58,0.04);"></div>
+    <!-- spine -->
+    <div class="absolute top-0 bottom-0 left-0 w-4 rounded-l-sm" style="background:linear-gradient(180deg,#c8933a44,#c8933a22,#c8933a44);"></div>
+    <!-- ruled lines -->
+    <div class="absolute" style="top:28px;left:24px;right:18px;">
+      <div style="height:1px;background:#c8d8e820;margin-bottom:14px;"></div>
+      <div style="height:1px;background:#c8d8e820;margin-bottom:14px;"></div>
+      <div style="height:1px;background:#c8d8e820;margin-bottom:14px;"></div>
+      <div style="height:1px;background:#c8d8e215;margin-bottom:14px;"></div>
+      <div style="height:1px;background:#c8d8e215;margin-bottom:14px;"></div>
+      <div style="height:1px;background:#c8d8e215;"></div>
+    </div>
+    <!-- warm candlelight glow from top-right -->
+    <div class="absolute top-3 right-5 w-16 h-16 rounded-full" style="background:radial-gradient(circle,rgba(200,147,58,0.18) 0%,transparent 70%);"></div>
+  </div>
+
+  <!-- Copy -->
+  <div class="fade-up delay-1 text-center px-6 max-w-2xl mx-auto">
+    <p class="text-xs tracking-widest2 uppercase mb-8 text-amber-400" style="letter-spacing:0.28em; opacity:0.7;">Coaching Program  ―  β版モニター募集</p>
+    <h1 class="font-mincho leading-loose2 text-moonlight mb-8"
+        style="font-size: clamp(1.55rem, 4.5vw, 2.6rem); font-weight:400; letter-spacing:0.06em;">
+      飲み込んだ言葉は、<br class="sm:hidden"/>夜のノートに<br/>置いていこう。
+    </h1>
+    <p class="font-mincho text-silvermist mb-14 leading-loose3 mx-auto"
+       style="font-size:clamp(0.82rem,2.2vw,0.98rem); max-width:480px; letter-spacing:0.05em;">
+      誰かの顔色を伺って、自分らしくいられなかった今日へ。<br/>
+      まずは安全な場所で、あなたの本当の輪郭を取り戻す<br/>
+      3ヶ月のプログラム。
+    </p>
+    <a href="#cta" class="btn-gold">ノートを開いてみる（β版に参加）</a>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 fade-up delay-4 flex flex-col items-center gap-2 opacity-30">
+    <span class="font-mincho text-silvermist" style="font-size:0.65rem; letter-spacing:0.22em;">scroll</span>
+    <div class="w-px h-10" style="background:linear-gradient(to bottom,#c8d8e8,transparent);"></div>
+  </div>
+
+</section>
+
+<hr class="gold-rule mx-auto" style="max-width:120px;" />
+
+
+<!-- ═══════════════════════════════════════════
+  2. PAIN / EMPATHY
+════════════════════════════════════════════ -->
+<section id="pain">
+  <div class="max-w-2xl mx-auto px-6">
+
+    <div class="fade-up text-center mb-16">
+      <p class="text-xs tracking-widest2 text-amber-400 mb-5" style="letter-spacing:0.24em; opacity:0.7;">共感</p>
+      <h2 class="font-mincho text-moonlight leading-loose2"
+          style="font-size:clamp(1.3rem,3.5vw,1.8rem); font-weight:400; letter-spacing:0.08em;">
+        こんな夜を、繰り返していませんか？
+      </h2>
+    </div>
+
+    <div class="fade-up delay-1 pain-card">
+      <p class="font-mincho text-silvermist leading-loose2"
+         style="font-size:clamp(0.88rem,2vw,1rem); letter-spacing:0.05em;">
+        喧嘩になるのが怖くて、いつも自分が折れてしまう
+      </p>
+    </div>
+
+    <div class="fade-up delay-2 pain-card">
+      <p class="font-mincho text-silvermist leading-loose2"
+         style="font-size:clamp(0.88rem,2vw,1rem); letter-spacing:0.05em;">
+        「ごめんね」と笑った後、ひとりで泣きたくなる
+      </p>
+    </div>
+
+    <div class="fade-up delay-3 pain-card">
+      <p class="font-mincho text-silvermist leading-loose2"
+         style="font-size:clamp(0.88rem,2vw,1rem); letter-spacing:0.05em;">
+        本当はどうしてほしかったのか、自分でももう分からない
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<hr class="gold-rule mx-auto" style="max-width:120px;" />
+
+
+<!-- ═══════════════════════════════════════════
+  3. CONCEPT
+════════════════════════════════════════════ -->
+<section id="concept" style="background:linear-gradient(160deg,#111827 0%,#0d1117 100%);">
+  <div class="max-w-2xl mx-auto px-6">
+
+    <div class="fade-up text-center mb-14">
+      <p class="text-xs tracking-widest2 text-amber-400 mb-5" style="letter-spacing:0.24em; opacity:0.7;">コンセプト</p>
+      <h2 class="font-mincho text-moonlight leading-loose2 mb-10"
+          style="font-size:clamp(1.3rem,3.5vw,1.8rem); font-weight:400; letter-spacing:0.08em;">
+        相手を変えるのではなく、<br/>自分を取り戻す。
+      </h2>
+    </div>
+
+    <div class="fade-up delay-1">
+      <p class="font-mincho text-silvermist leading-loose3 text-center mx-auto"
+         style="font-size:clamp(0.86rem,2vw,0.98rem); letter-spacing:0.05em; max-width:500px;">
+        「嫌われないための関係」は、もう終わりにしませんか。<br/><br/>
+        日常のモヤモヤを吐き出す<strong class="text-amber-300 font-normal">「専用ノート」</strong>と、<br/>
+        2週間に1回の<strong class="text-amber-300 font-normal">「対話（コーチング）」</strong>。<br/><br/>
+        この2つを組み合わせることで、<br/>
+        あなた自身の<strong class="text-moonlight font-normal">『譲れない基準』</strong>を形にします。
+      </p>
+    </div>
+
+    <!-- two pillars -->
+    <div class="fade-up delay-2 grid grid-cols-1 sm:grid-cols-2 gap-6 mt-16">
+      <div class="p-8 rounded-sm text-center" style="background:#1a2540; border:1px solid #c8933a22; box-shadow:0 0 30px rgba(0,0,0,0.4);">
+        <div class="text-amber-400 mb-4" style="font-size:1.8rem; opacity:0.7;">✦</div>
+        <p class="font-mincho text-moonlight mb-3" style="font-size:0.88rem; letter-spacing:0.16em;">専用ノート</p>
+        <p class="font-mincho text-silvermist leading-loose2" style="font-size:0.8rem; letter-spacing:0.04em;">
+          日々のモヤモヤ、怒り、悲しみ。<br/>言語化できない感情を、まずページに吐き出す。
+        </p>
+      </div>
+      <div class="p-8 rounded-sm text-center" style="background:#1a2540; border:1px solid #c8933a22; box-shadow:0 0 30px rgba(0,0,0,0.4);">
+        <div class="text-amber-400 mb-4" style="font-size:1.8rem; opacity:0.7;">◇</div>
+        <p class="font-mincho text-moonlight mb-3" style="font-size:0.88rem; letter-spacing:0.16em;">伴走型コーチング</p>
+        <p class="font-mincho text-silvermist leading-loose2" style="font-size:0.8rem; letter-spacing:0.04em;">
+          2週間に1回、安全な対話の場で<br/>ノートの記録と向き合います。
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr class="gold-rule mx-auto" style="max-width:120px;" />
+
+
+<!-- ═══════════════════════════════════════════
+  4. ROADMAP
+════════════════════════════════════════════ -->
+<section id="roadmap">
+  <div class="max-w-xl mx-auto px-6">
+
+    <div class="fade-up text-center mb-16">
+      <p class="text-xs tracking-widest2 text-amber-400 mb-5" style="letter-spacing:0.24em; opacity:0.7;">ロードマップ</p>
+      <h2 class="font-mincho text-moonlight leading-loose2"
+          style="font-size:clamp(1.2rem,3.2vw,1.7rem); font-weight:400; letter-spacing:0.08em;">
+        あなたの輪郭を取り戻す、<br/>3ヶ月の旅
+      </h2>
+    </div>
+
+    <!-- Step list -->
+    <div class="relative pl-6">
+
+      <!-- vertical connecting line (decorative) -->
+      <div class="absolute left-0 top-3 bottom-3 w-px" style="background:linear-gradient(to bottom,#c8933a55,#c8933a22,transparent); margin-left:4px;"></div>
+
+      <!-- Step 1 -->
+      <div class="fade-up delay-1 flex gap-6 mb-14">
+        <div class="flex flex-col items-center pt-1" style="min-width:10px;">
+          <div class="step-dot"></div>
+        </div>
+        <div>
+          <p class="font-mincho text-amber-400 mb-2" style="font-size:0.75rem; letter-spacing:0.2em;">1ヶ月目</p>
+          <h3 class="font-mincho text-moonlight mb-3 leading-loose2" style="font-size:1rem; letter-spacing:0.06em; font-weight:500;">
+            解毒と現在地の把握
+          </h3>
+          <p class="font-mincho text-silvermist leading-loose2" style="font-size:0.85rem; letter-spacing:0.04em;">
+            痛みの吐き出しと、繰り返してきたパターンの発見。まずは「今どこにいるのか」を丁寧に確かめます。
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="fade-up delay-2 flex gap-6 mb-14">
+        <div class="flex flex-col items-center pt-1" style="min-width:10px;">
+          <div class="step-dot"></div>
+        </div>
+        <div>
+          <p class="font-mincho text-amber-400 mb-2" style="font-size:0.75rem; letter-spacing:0.2em;">2ヶ月目</p>
+          <h3 class="font-mincho text-moonlight mb-3 leading-loose2" style="font-size:1rem; letter-spacing:0.06em; font-weight:500;">
+            輪郭の再構築
+          </h3>
+          <p class="font-mincho text-silvermist leading-loose2" style="font-size:0.85rem; letter-spacing:0.04em;">
+            「自分らしさ」と「譲れない基準」の言語化。曖昧だった自分の輪郭を、少しずつ言葉にしていきます。
+          </p>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="fade-up delay-3 flex gap-6">
+        <div class="flex flex-col items-center pt-1" style="min-width:10px;">
+          <div class="step-dot"></div>
+        </div>
+        <div>
+          <p class="font-mincho text-amber-400 mb-2" style="font-size:0.75rem; letter-spacing:0.2em;">3ヶ月目</p>
+          <h3 class="font-mincho text-moonlight mb-3 leading-loose2" style="font-size:1rem; letter-spacing:0.06em; font-weight:500;">
+            新しい環境への一歩目
+          </h3>
+          <p class="font-mincho text-silvermist leading-loose2" style="font-size:0.85rem; letter-spacing:0.04em;">
+            行動計画と「一歩目」の記録。変化を恐れずに踏み出せるよう、あなたのペースで前進します。
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<hr class="gold-rule mx-auto" style="max-width:120px;" />
+
+
+<!-- ═══════════════════════════════════════════
+  5. CLOSING CTA
+════════════════════════════════════════════ -->
+<section id="cta" style="background:linear-gradient(160deg,#111827 0%,#0d1117 100%); padding-bottom: 9rem;">
+  <div class="max-w-lg mx-auto px-6 text-center">
+
+    <div class="fade-up">
+      <p class="text-xs tracking-widest2 text-amber-400 mb-6" style="letter-spacing:0.24em; opacity:0.7;">β版モニター募集</p>
+      <h2 class="font-mincho text-moonlight leading-loose2 mb-10"
+          style="font-size:clamp(1.2rem,3.2vw,1.7rem); font-weight:400; letter-spacing:0.08em;">
+        まずは、今のあなたの<br/>現在地を知ることから。
+      </h2>
+    </div>
+
+    <!-- Limit notice -->
+    <div class="fade-up delay-1 mb-12 inline-block px-8 py-5 rounded-sm"
+         style="background:#1a2540; border:1px solid #c8933a33; box-shadow: 0 0 30px rgba(0,0,0,0.5);">
+      <p class="font-mincho text-silvermist leading-loose2"
+         style="font-size:clamp(0.78rem,1.8vw,0.88rem); letter-spacing:0.06em;">
+        β版のため、お一人お一人と丁寧に向き合えるよう<br/>
+        <strong class="text-amber-300 font-normal">【先着数名様限定】</strong>とさせていただきます。
+      </p>
+    </div>
+
+    <div class="fade-up delay-2">
+      <a href="#" class="btn-gold">ノートを開いてみる（β版に参加）</a>
+    </div>
+
+    <!-- Ambient candlelight hint -->
+    <div class="fade-up delay-3 mt-16 w-px mx-auto" style="height:60px; background:linear-gradient(to bottom,#c8933a44,transparent);"></div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════
+  FOOTER
+════════════════════════════════════════════ -->
+<footer class="text-center pb-14 px-6">
+  <p class="font-mincho text-mist" style="font-size:0.72rem; letter-spacing:0.14em;">
+    © 2025 夜のノート — 伴走型コーチング. All rights reserved.
+  </p>
+</footer>
+
+
+<!-- ── Scroll fade-in observer ── -->
+<script>
+  const targets = document.querySelectorAll('.fade-up');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+  targets.forEach(el => observer.observe(el));
+
+  // Trigger elements already in view on load
+  setTimeout(() => {
+    targets.forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight) el.classList.add('visible');
+    });
+  }, 80);
+</script>
+
+</body>
+</html>
