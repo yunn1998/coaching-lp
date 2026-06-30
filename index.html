@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bubbloom note — β版モニター募集</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600&family=Shippori+Mincho:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --linen: #FAFAF7;
+      --ink: #333333;
+      --ink-light: #666666;
+      --ink-faint: #999999;
+      --blue-wash: #D6E8F0;
+      --blue-pale: #EBF3F8;
+      --ivory: #F5F0E8;
+      --ivory-deep: #EDE6D6;
+      --border-art: #B8CDD6;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      background-color: var(--linen);
+      color: var(--ink);
+      font-family: 'Noto Serif JP', 'Shippori Mincho', 'Georgia', serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 2;
+      letter-spacing: 0.04em;
+    }
+
+    .ornament {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      margin: 2rem 0;
+    }
+    .ornament-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border-art));
+    }
+    .ornament-line.right {
+      background: linear-gradient(90deg, var(--border-art), transparent);
+    }
+    .ornament-center {
+      color: var(--border-art);
+      font-size: 1.1rem;
+      letter-spacing: 0.2em;
+      flex-shrink: 0;
+    }
+
+    .frame-box {
+      position: relative;
+      border: 1px solid var(--border-art);
+      padding: 3rem 2.5rem;
+    }
+    .frame-box::before,
+    .frame-box::after {
+      content: '';
+      position: absolute;
+      width: 28px;
+      height: 28px;
+      border-color: var(--blue-wash);
+      border-style: solid;
+    }
+    .frame-box::before {
+      top: -4px;
+      left: -4px;
+      border-width: 2px 0 0 2px;
+      border-radius: 3px 0 0 0;
+    }
+    .frame-box::after {
+      bottom: -4px;
+      right: -4px;
+      border-width: 0 2px 2px 0;
+      border-radius: 0 0 3px 0;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.25em;
+      color: var(--ink-faint);
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    .main-copy {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      line-height: 1.8;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+    }
+
+    .sub-copy {
+      font-size: clamp(0.85rem, 2vw, 1rem);
+      line-height: 2.2;
+      color: var(--ink-light);
+      font-weight: 300;
+    }
+
+    h2.section-heading {
+      font-size: clamp(1.1rem, 3vw, 1.6rem);
+      font-weight: 400;
+      line-height: 1.8;
+      letter-spacing: 0.06em;
+    }
+
+    .pain-item {
+      padding: 1.4rem 0;
+      border-bottom: 1px solid var(--ivory-deep);
+      font-size: 0.95rem;
+      line-height: 2.1;
+      color: var(--ink-light);
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .pain-item:first-of-type {
+      border-top: 1px solid var(--ivory-deep);
+    }
+    .pain-dash {
+      color: var(--border-art);
+      flex-shrink: 0;
+      margin-top: 0.1em;
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+    }
+
+    .step-card {
+      background: var(--ivory);
+      border: 1px solid var(--ivory-deep);
+      padding: 2.5rem 2rem;
+      position: relative;
+    }
+    .step-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--blue-wash), transparent);
+    }
+    .step-month {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--ink-faint);
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.6rem;
+      line-height: 1.6;
+    }
+    .step-desc {
+      font-size: 0.88rem;
+      color: var(--ink-light);
+      line-height: 2.2;
+      font-weight: 300;
+    }
+
+    .plan-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    @media (max-width: 640px) {
+      .plan-grid { grid-template-columns: 1fr; }
+    }
+    .plan-card {
+      border: 1px solid var(--ivory-deep);
+      padding: 2rem 1.75rem;
+      background: var(--linen);
+    }
+    .plan-card.featured {
+      border-color: var(--border-art);
+      background: var(--linen);
+    }
+    .plan-card.soon {
+      opacity: 0.5;
+    }
+    .plan-name {
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      color: var(--ink-faint);
+      margin-bottom: 1rem;
+    }
+    .plan-price {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 300;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      color: var(--ink);
+    }
+    .plan-price-unit {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+    }
+    .plan-price-sub {
+      font-size: 0.72rem;
+      color: var(--ink-faint);
+      margin-top: 0.4rem;
+      letter-spacing: 0.1em;
+    }
+    .plan-features {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--ivory-deep);
+    }
+    .plan-feature-item {
+      font-size: 0.82rem;
+      color: var(--ink-light);
+      line-height: 2;
+      padding-left: 1rem;
+      position: relative;
+    }
+    .plan-feature-item::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--border-art);
+    }
+    .plan-note {
+      font-size: 0.68rem;
+      color: var(--ink-faint);
+      margin-top: 1.2rem;
+      letter-spacing: 0.08em;
+      line-height: 1.9;
+    }
+    .soon-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      color: var(--ink-faint);
+      border: 1px solid var(--ivory-deep);
+      padding: 0.2rem 0.7rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta-button {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--linen);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      padding: 1.2rem 3rem;
+      border: none;
+      cursor: pointer;
+      transition: background 0.4s ease, letter-spacing 0.3s ease;
+      text-decoration: none;
+      text-align: center;
+    }
+    .cta-button:hover {
+      background: #1a1a1a;
+      letter-spacing: 0.2em;
+    }
+
+    .condition-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-size: 0.88rem;
+      line-height: 2;
+      color: var(--ink-light);
+      padding: 0.6rem 0;
+    }
+    .condition-mark {
+      color: var(--border-art);
+      flex-shrink: 0;
+      font-size: 0.75rem;
+      margin-top: 0.25em;
+    }
+
+    .fv-bg {
+      background:
+        radial-gradient(ellipse at 80% 20%, rgba(214,232,240,0.25) 0%, transparent 60%),
+        radial-gradient(ellipse at 20% 80%, rgba(237,230,214,0.2) 0%, transparent 55%),
+        var(--linen);
+    }
+
+    .steps-connector {
+      width: 1px;
+      height: 2rem;
+      background: linear-gradient(180deg, var(--blue-wash), transparent);
+      margin: 0 auto;
+    }
+
+    footer {
+      font-size: 0.72rem;
+      color: var(--ink-faint);
+      letter-spacing: 0.12em;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ==================== HEADER ==================== -->
+<header class="py-8 px-8 md:px-16">
+  <div class="max-w-4xl mx-auto flex items-center justify-between">
+    <div>
+      <span class="section-label" style="font-size:0.6rem; letter-spacing:0.3em;">Bubbloom note</span>
+    </div>
+    <div style="color:var(--border-art); font-size:0.6rem; letter-spacing:0.25em;">β版 モニター募集中</div>
+  </div>
+</header>
+
+<!-- ==================== FIRST VIEW ==================== -->
+<section class="fv-bg min-h-screen flex flex-col justify-center px-8 md:px-16 py-24 md:py-32">
+  <div class="max-w-3xl mx-auto">
+
+    <h1 class="main-copy mb-10 md:mb-14">
+      バブる日を、<br/>
+      つくろう。
+    </h1>
+
+    <div style="width:40px; height:1px; background:var(--border-art); margin-bottom:2.5rem;"></div>
+
+    <p class="sub-copy max-w-xl" style="line-height:2.6;">
+      泡立てて、洗い流して、自分本来の彩を見つける日。<br/>
+      その彩で、花を咲かせる。
+    </p>
+
+    <div class="mt-16 md:mt-20">
+      <a href="#offer" class="cta-button">バブる日を始めてみる</a>
+    </div>
+
+    <div class="mt-20 md:mt-24" style="opacity:0.35;">
+      <svg width="180" height="28" viewBox="0 0 180 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <line x1="0" y1="14" x2="60" y2="14" stroke="#B8CDD6" stroke-width="0.8"/>
+        <path d="M60 14 Q70 4 80 14 Q90 24 100 14 Q110 4 120 14" stroke="#B8CDD6" stroke-width="0.8" fill="none"/>
+        <line x1="120" y1="14" x2="180" y2="14" stroke="#B8CDD6" stroke-width="0.8"/>
+        <circle cx="90" cy="14" r="2.5" stroke="#B8CDD6" stroke-width="0.8" fill="none"/>
+        <circle cx="90" cy="14" r="1" fill="#B8CDD6"/>
+        <circle cx="70" cy="14" r="1.2" fill="#B8CDD6"/>
+        <circle cx="110" cy="14" r="1.2" fill="#B8CDD6"/>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== バブる日って？ ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-36">
+  <div class="max-w-3xl mx-auto">
+
+    <div class="mb-12">
+      <span class="section-label" style="display:block; margin-bottom:1.2rem;">バブる日って？</span>
+      <h2 class="section-heading">
+        周りの言葉、「当たり前」、<br/>
+        気づかないうちに染み込んできた期待——
+      </h2>
+    </div>
+
+    <p class="sub-copy" style="font-size:0.95rem; line-height:2.6; color:var(--ink);">
+      そういうものが、少しずつ自分に付着していく。
+    </p>
+
+    <div style="margin: 3rem 0; padding: 2rem 2rem; border-left: 2px solid var(--border-art);">
+      <p style="font-size: clamp(1rem, 2.5vw, 1.25rem); font-weight:400; line-height:2; letter-spacing:0.06em; color:var(--ink);">
+        「こうあるべき」と「こうしたい」の区別が、<br/>
+        だんだんわからなくなる。
+      </p>
+    </div>
+
+    <p class="sub-copy" style="font-size:0.95rem; line-height:2.6; color:var(--ink);">
+      バブるとは、その付着したものを泡立てて、洗い流すこと。<br/>
+      剥がれた先に、自分本来の彩がある。<br/>
+      その彩で花を咲かせる日が、バブる日。
+    </p>
+
+    <div class="ornament" style="margin-top:4rem;">
+      <div class="ornament-line"></div>
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2 Q14 7 19 7 Q14 9 16 14 Q12 10 8 14 Q10 9 5 7 Q10 7 12 2Z" stroke="#B8CDD6" stroke-width="0.8" fill="none"/>
+        <circle cx="12" cy="12" r="1.5" fill="#B8CDD6"/>
+      </svg>
+      <div class="ornament-line right"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== こんな感覚、ある？ ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-36" style="background: var(--ivory);">
+  <div class="max-w-3xl mx-auto">
+
+    <span class="section-label" style="display:block; margin-bottom:1.2rem;">こんな感覚、ある？</span>
+
+    <div style="margin-top:2rem;">
+      <div class="pain-item">
+        <span class="pain-dash">—</span>
+        <span>なんとなく、まわりに合わせて生きている気がする</span>
+      </div>
+      <div class="pain-item">
+        <span class="pain-dash">—</span>
+        <span>やりたいことを聞かれると、答えに詰まる</span>
+      </div>
+      <div class="pain-item">
+        <span class="pain-dash">—</span>
+        <span>「自分らしい」という感覚が薄れてきた</span>
+      </div>
+      <div class="pain-item">
+        <span class="pain-dash">—</span>
+        <span>毎日をこなすことに、少し疲れた</span>
+      </div>
+    </div>
+
+    <p class="sub-copy mt-12" style="font-size:0.95rem; line-height:2.6; color:var(--ink);">
+      それは自分が消えているんじゃなくて、<br/>
+      付着したものが厚くなっているだけかもしれない。
+    </p>
+
+  </div>
+</section>
+
+<!-- ==================== Bubbloom noteとは ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-36">
+  <div class="max-w-3xl mx-auto">
+
+    <span class="section-label" style="display:block; margin-bottom:1.2rem;">Bubbloom note とは</span>
+    <h2 class="section-heading mb-12">
+      自分を探索する場所。
+    </h2>
+
+    <div class="frame-box" style="background:var(--linen);">
+      <p class="sub-copy" style="font-size:0.92rem; line-height:2.6; color:var(--ink);">
+        コーチングでも、カウンセリングでもない。<br/>
+        問いを重ねながら、自分の彩を見つけにいく3ヶ月。
+      </p>
+      <p class="sub-copy mt-6" style="font-size:0.88rem; line-height:2.6;">
+        ひとりでバブるか、みんなでバブるか。<br/>
+        どちらのかたちでも、バブる日は作れる。
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== 3ヶ月のプロセス ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-36" style="background: var(--ivory);">
+  <div class="max-w-3xl mx-auto">
+
+    <span class="section-label" style="display:block; margin-bottom:1.2rem;">ひとりでバブる</span>
+    <h2 class="section-heading mb-16">
+      3ヶ月のプロセス
+    </h2>
+
+    <div class="step-card">
+      <span class="step-month">1st month</span>
+      <div class="step-title">泡立てる</div>
+      <div class="step-desc">
+        バブりはじめる月。<br/>
+        積もってたもの、ぜんぶ泡立てよう。<br/>
+        何が出てくるか、まだわからなくていい。
+      </div>
+    </div>
+
+    <div class="steps-connector mt-0 mb-0"></div>
+
+    <div class="step-card">
+      <span class="step-month">2nd month</span>
+      <div class="step-title">洗い流す</div>
+      <div class="step-desc">
+        泡が立ったら、流してみる。<br/>
+        自分のものじゃなかったものが、<br/>
+        するっと落ちていく感覚がある。
+      </div>
+    </div>
+
+    <div class="steps-connector mt-0 mb-0"></div>
+
+    <div class="step-card">
+      <span class="step-month">3rd month</span>
+      <div class="step-title">咲く</div>
+      <div class="step-desc">
+        残ったのが、あなたの彩。<br/>
+        その彩で、バブる日を生きる。
+      </div>
+    </div>
+
+    <p style="font-size:0.75rem; color:var(--ink-faint); margin-top:2rem; letter-spacing:0.1em; line-height:2;">
+      2週間に1回、個別でバブる時間（計6回）。
+    </p>
+
+  </div>
+</section>
+
+<!-- ==================== こんな人と ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-36">
+  <div class="max-w-3xl mx-auto">
+
+    <span class="section-label" style="display:block; margin-bottom:1.2rem;">こんな人と一緒にバブりたい</span>
+
+    <div style="margin-top:2rem;">
+      <div class="condition-item">
+        <span class="condition-mark">◦</span>
+        <span>3ヶ月、自分と向き合う時間をつくれる人</span>
+      </div>
+      <div class="condition-item">
+        <span class="condition-mark">◦</span>
+        <span>答えを急がず、探索を楽しめる人</span>
+      </div>
+      <div class="condition-item">
+        <span class="condition-mark">◦</span>
+        <span>終了後、感想を聞かせてくれる人</span>
+      </div>
+    </div>
+
+    <p style="font-size:0.75rem; color:var(--ink-faint); margin-top:2rem; letter-spacing:0.08em; line-height:2;">
+      現在はβ版のため、友人紹介のみでの募集です。
+    </p>
+
+  </div>
+</section>
+
+<!-- ==================== OFFER SECTION ==================== -->
+<section id="offer" class="px-8 md:px-16 py-24 md:py-36" style="background: var(--blue-pale);">
+  <div class="max-w-3xl mx-auto">
+
+    <span class="section-label" style="display:block; margin-bottom:1.2rem;">プランを選ぶ</span>
+
+    <div class="plan-grid">
+
+      <!-- みんなでバブる -->
+      <div class="plan-card soon">
+        <p class="plan-name">みんなでバブる</p>
+        <span class="soon-badge">coming soon</span>
+        <div class="plan-features">
+          <p class="plan-feature-item">コミュニティ参加</p>
+          <p class="plan-feature-item">グループでのバブる日</p>
+        </div>
+      </div>
+
+      <!-- ひとりでバブる -->
+      <div class="plan-card featured">
+        <p class="plan-name">ひとりでバブる</p>
+        <p class="plan-price">¥5,000<span class="plan-price-unit"> /月</span></p>
+        <p class="plan-price-sub">3ヶ月 ¥15,000（学生）</p>
+        <div class="plan-features">
+          <p class="plan-feature-item">個別セッション 計6回</p>
+          <p class="plan-feature-item">3ヶ月の探索プロセス</p>
+        </div>
+        <p class="plan-note">通常価格 ¥10,000/月（¥30,000/3ヶ月）</p>
+      </div>
+
+    </div>
+
+    <div style="margin-top:3rem; text-align:center;">
+      <a href="#" class="cta-button" style="display:block; max-width:480px; margin:0 auto;">
+        バブる日を始めてみる
+      </a>
+      <p style="font-size:0.72rem; color:var(--ink-faint); margin-top:1.2rem; letter-spacing:0.1em;">
+        β版 · 友人紹介限定
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ==================== FOOTER ==================== -->
+<section class="px-8 md:px-16 py-24 md:py-28">
+  <div class="max-w-3xl mx-auto text-center">
+
+    <div class="ornament">
+      <div class="ornament-line"></div>
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 2 Q19 9 26 9 Q19 12 22 19 Q16 13 10 19 Q13 12 6 9 Q13 9 16 2Z" stroke="#B8CDD6" stroke-width="0.9" fill="none"/>
+        <circle cx="16" cy="16" r="2" stroke="#B8CDD6" stroke-width="0.9" fill="none"/>
+      </svg>
+      <div class="ornament-line right"></div>
+    </div>
+
+    <p class="sub-copy" style="font-size:0.85rem; line-height:2.6; margin-top:1rem; color:var(--ink-light);">
+      あなたがすでに持っている彩を、<br/>
+      ただ静かに、取り戻す時間です。
+    </p>
+
+    <div style="margin-top:4rem;">
+      <footer>
+        <p style="letter-spacing:0.2em; font-size:0.65rem;">Bubbloom note © 2025</p>
+        <p style="margin-top:0.5rem; font-size:0.62rem; opacity:0.7;">本サービスは友人紹介制のβ版プログラムです</p>
+      </footer>
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
